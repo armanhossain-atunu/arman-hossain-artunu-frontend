@@ -1,0 +1,10 @@
+"use client";
+import { FormEvent, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, LockKeyhole, LoaderCircle, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
+import { api } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
+export default function AdminLoginPage(){const router=useRouter();const[email,setEmail]=useState("");const[password,setPassword]=useState("");const[busy,setBusy]=useState(false);async function submit(e:FormEvent){e.preventDefault();setBusy(true);try{await api("/api/auth/login",{method:"POST",body:JSON.stringify({email,password})});toast.success("Signed in successfully");router.replace("/admin/dashboard");}catch(err){toast.error(err instanceof Error?err.message:"Login failed");}finally{setBusy(false)}}return <main className="auth-page"><div className="auth-top"><Link href="/" className="brand"><span className="brand-mark">A</span><span>arman<span className="brand-dot">.</span></span></Link><ThemeToggle/></div><section className="auth-card glass-card"><div className="auth-icon"><LockKeyhole size={24}/></div><span className="section-kicker">PRIVATE AREA</span><h1>Welcome back.</h1><p>Sign in to manage your portfolio content.</p><form onSubmit={submit} className="auth-form"><label>Email address<input type="email" autoComplete="username" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="admin@example.com"/></label><label>Password<input type="password" autoComplete="current-password" required minLength={1} value={password} onChange={e=>setPassword(e.target.value)} placeholder="Your admin password"/></label><Button size="lg" type="submit" disabled={busy} className="auth-submit">{busy?<LoaderCircle className="spin" size={17}/>:<ShieldCheck size={17}/>} Sign in securely</Button></form><div className="auth-security"><LockKeyhole size={14}/> Protected by your backend&apos;s HttpOnly session cookie.</div><Link href="/" className="back-link"><ArrowLeft size={15}/> Back to portfolio</Link></section></main>}
